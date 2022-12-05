@@ -1,19 +1,6 @@
-import java.awt.*;
 import java.awt.image.BufferedImage;
 
-import javax.swing.*;
-
-import org.opencv.core.Core;
-import org.opencv.core.Mat;
-import org.opencv.core.MatOfByte;
-import org.opencv.imgcodecs.Imgcodecs;
-import org.opencv.videoio.VideoCapture;
-
 public class Analyzer {
-
-    static{
-        System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-    }
 
     private double maxBrightness;
     private double minBrightness;
@@ -21,52 +8,13 @@ public class Analyzer {
     private double frequency;
     private double pulsation;
 
-    public void Analyze(String src, int fps) {
-        maxBrightness = Integer.MIN_VALUE;
-        minBrightness = Integer.MAX_VALUE;
-        averageBrightness = 0;
-        frequency = 0;
-        pulsation = 0;
+    private int frameCount;
 
-        int maxIndex = 0;
-        int minIndex = 0;
-        double brightness;
-
-        VideoCapture cap = new VideoCapture(src); // создание видеопотока
-        Mat frame = new Mat();
-        MatOfByte buf = new MatOfByte();
-
-        ImageIcon ic;
-        int n = 0;
-        while (cap.read(frame)) {// считываем каждый кажр из потока
-            Imgcodecs.imencode(".png", frame, buf);
-            ic = new ImageIcon(buf.toArray());
-            VideoShow.refreshForm(ic); // обновляем изображение в форме(можно убрать)
-            BufferedImage bimage = new BufferedImage(ic.getImage().getWidth(null), ic.getImage().getHeight(null), BufferedImage.TYPE_INT_ARGB);
-            Graphics2D bGr = bimage.createGraphics();
-            bGr.drawImage(ic.getImage(), 0, 0, null);
-            bGr.dispose();
-
-            brightness = ImageParser.getBrightness(bimage);
-            averageBrightness += brightness;
-
-            if (brightness > maxBrightness) {
-                maxBrightness = brightness;
-                maxIndex = n;
-            }
-            if (brightness < minBrightness) {
-                minBrightness = brightness;
-                minIndex = n;
-            }
-            n++;
-        }
-        cap.release();
-        averageBrightness /= n;
-        pulsation = (maxBrightness - minBrightness) / averageBrightness * 50;
-        frequency = 0.5 * fps / Math.abs(maxIndex - minIndex);
+    public Analyzer(BufferedImage[] images, double time) {
+        Analyze(images, time);
     }
 
-    public void Analyze(BufferedImage[] images, double time) {
+    private void Analyze(BufferedImage[] images, double time) {
         maxBrightness = Integer.MIN_VALUE;
         minBrightness = Integer.MAX_VALUE;
         averageBrightness = 0;
@@ -77,23 +25,25 @@ public class Analyzer {
         int minIndex = 0;
         double brightness;
 
-        int n = 0;
-        for (; n < images.length; n++) {
-            brightness = ImageParser.getBrightness(images[n]);
+        frameCount = 0;
+        for (; frameCount < images.length; frameCount++) {
+            brightness = ImageParser.getBrightness(images[frameCount]);
 
             averageBrightness += brightness;
 
             if (brightness > maxBrightness) {
                 maxBrightness = brightness;
-                maxIndex = n;
+                maxIndex = frameCount;
             }
             if (brightness < minBrightness) {
                 minBrightness = brightness;
-                minIndex = n;
+                minIndex = frameCount;
             }
         }
-        averageBrightness /= n;
+        averageBrightness /= frameCount;
         pulsation = (maxBrightness - minBrightness) / averageBrightness * 50;
+        System.out.println("maxIndex:\t" + maxIndex);
+        System.out.println("minIndex:\t" + minIndex);
         frequency = 0.5 * images.length / time / Math.abs(maxIndex - minIndex);
     }
 
@@ -101,8 +51,6 @@ public class Analyzer {
         maxBrightness = Integer.MIN_VALUE;
         minBrightness = Integer.MAX_VALUE;
         averageBrightness = 0;
-        frequency = 0;
-        pulsation = 0;
 
         int maxIndex = 0;
         int minIndex = 0;
@@ -145,5 +93,9 @@ public class Analyzer {
 
     public double getPulsation() {
         return pulsation;
+    }
+
+    public int getFrameCount() {
+        return frameCount;
     }
 }

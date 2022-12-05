@@ -1,16 +1,17 @@
 public class Program {
     public static void main(String[] args){
 
-        Analyzer a = new Analyzer();
-        a.Analyze("src/movies/60_2.MOV", 60);
+        var frames = VideoViewer.SplitIntoFrames("movies/240_1.MOV");
+        var anal = new Analyzer(frames, 1);
 
-        System.out.println("max: " + a.getMaxBrightness());
-        System.out.println("min: " + a.getMinBrightness());
-        System.out.println("average: " + a.getAverageBrightness());
-        System.out.println("Frequency: " + a.getFrequency());
-        System.out.println("Pulsation: " + a.getPulsation());
+        System.out.println("count:\t\t" + anal.getFrameCount());
+        System.out.println("max:\t\t" + anal.getMaxBrightness());
+        System.out.println("min:\t\t" + anal.getMinBrightness());
+        System.out.println("average:\t" + anal.getAverageBrightness());
+        System.out.println("Frequency:\t" + anal.getFrequency());
+        System.out.println("Pulsation:\t" + anal.getPulsation());
 
-        VideoShow.closeForm();
+        //VideoShow.closeForm();
     }
 //        var black = ImageIO.read(new File("src\\images\\black.png"));
 //        var white = ImageIO.read(new File("src\\images\\white.png"));

@@ -22,11 +22,4 @@ public class VideoShow {
         window.dispatchEvent(new WindowEvent(window, WindowEvent.WINDOW_CLOSING));
     }
 
-    public static JFrame getWindow() {
-        return window;
-    }
-
-    public static JLabel getScreen() {
-        return screen;
-    }
 }
