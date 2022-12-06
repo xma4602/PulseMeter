@@ -1,4 +1,2 @@
-/out/
-*.class
-.idea
-PulseMeter.iml
+
+.idea/misc.xml
