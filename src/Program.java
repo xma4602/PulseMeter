@@ -7,17 +7,12 @@ import javafx.stage.Stage;
 
 public class Program extends Application {
     public static void main(String[] args) {
-//        System.out.println("max: " + a.getMaxBrightness());
-//        System.out.println("min: " + a.getMinBrightness());
-//        System.out.println("average: " + a.getAverageBrightness());
-//        System.out.println("Frequency: " + a.getFrequency());
-//        System.out.println("Pulsation: " + a.getPulsation());
-//        System.out.println("FPS: " + a.getFPS());
+
         launch();
     }
 
     public void start(Stage stage) {
-        VideoHandler videoHandler = new VideoHandler("src/materials/videos/4.mp4");
+        VideoHandler videoHandler = new VideoHandler("src/materials/videos/7.mp4");
 
         stage.setTitle("Chart");
         stage.setResizable(false);
@@ -27,9 +22,7 @@ public class Program extends Application {
         var lineChart = new LineChart<>(xAxis, yAxis);
         var series = new XYChart.Series();
 
-        int from = 0, to = 1000;
-
-        for (int i = from; i < to && i < videoHandler.getFrames().length - 1; i++) {
+        for (int i = 0; i < videoHandler.getFrames().length; i++) {
             series.getData().add(new XYChart.Data(i, videoHandler.getFrames()[i]));
         }
 
@@ -38,5 +31,13 @@ public class Program extends Application {
         stage.setScene(scene);
 
         stage.show();
+
+        Analyzer a = new Analyzer(videoHandler.getFrames(), videoHandler.getFPS());
+        System.out.println("max: " + a.getMaxBrightness());
+        System.out.println("min: " + a.getMinBrightness());
+        System.out.println("average: " + a.getAverageBrightness());
+        System.out.println("Frequency: " + a.getFrequency());
+        System.out.println("Pulsation: " + a.getPulsation());
+        System.out.println("FPS: " + a.getFPS());
     }
 }
