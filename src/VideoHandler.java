@@ -6,85 +6,49 @@ import org.opencv.videoio.VideoCapture;
 import org.opencv.videoio.Videoio;
 
 import javax.swing.ImageIcon;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-
+import java.util.LinkedList;
 
 public class VideoHandler {
 
-    static{
+    static {
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
     }
+    private LinkedList<Double> frames;
+    private int FRAMES_COUNT = 1000;
+    double FPS;
 
-    private double[] pulsationArray;
-    private double maxBrightness, minBrightness, averageBrightness, frequency, pulsation, FPS;
-    public VideoHandler(String path){
-        pulsationArray = new double[150];
-        maxBrightness = Integer.MIN_VALUE;
-        minBrightness = Integer.MAX_VALUE;
-        averageBrightness = 0;
-        frequency = 0;
-        pulsation = 0;
 
-        int maxIndex = 0, minIndex = 0;
-        double brightness;
 
+    public VideoHandler(String path) {
         VideoCapture cap = new VideoCapture(path); // создание видеопотока
-
+        frames = new LinkedList<>();
         FPS = cap.get(Videoio.CAP_PROP_FPS);
 
         Mat frame = new Mat();
         MatOfByte buf = new MatOfByte();
+        Graphics2D graphics ;
+        ImageIcon icon;
+        BufferedImage image;
+        double brightness;
 
-        ImageIcon ic;
-        int frames = 0;
-        while (cap.read(frame) && (frames < pulsationArray.length - 1)) {// считываем каждый кадр из потока
+        // считываем каждый кадр из потока
+        for (int i = 0; cap.read(frame) && i < FRAMES_COUNT; i++)  {
             Imgcodecs.imencode(".png", frame, buf);
-            ic = new ImageIcon(buf.toArray());
-            BufferedImage bimage = new BufferedImage(ic.getIconWidth(), ic.getIconHeight(), BufferedImage.TYPE_INT_RGB);
+            icon = new ImageIcon(buf.toArray());
+            image = new BufferedImage(icon.getIconWidth(), icon.getIconHeight(), BufferedImage.TYPE_INT_RGB);
+            graphics = image.createGraphics();
+            graphics.drawImage(icon.getImage(), 0, 0, null);
+            graphics.dispose();
 
-//            Graphics2D bGr = bimage.createGraphics(); // для вывода видеоизображения
-//            bGr.drawImage(ic.getImage(), 0, 0, null);
-//            bGr.dispose();
-
-            brightness = ImageParser.getBrightness(bimage);
-            pulsationArray[frames] = brightness;
-
-            averageBrightness += brightness;
-
-            if (brightness > maxBrightness) {
-                maxBrightness = brightness;
-                maxIndex = frames;
-            }
-            if (brightness < minBrightness) {
-                minBrightness = brightness;
-                minIndex = frames;
-            }
-            frames++;
+            brightness = ImageParser.getBrightness(image);
+            frames.add(brightness);
         }
         cap.release();
-        averageBrightness /= frames;
-        pulsation = (maxBrightness - minBrightness) / averageBrightness * 50;
-        frequency = 0.5 * FPS / Math.abs(maxIndex - minIndex);
     }
-    public double[] getPulsationArray() {
-        return pulsationArray;
-    }
-    public double getAverageBrightness() {
-        return averageBrightness;
-    }
-    public double getMaxBrightness() {
-        return maxBrightness;
-    }
-    public double getMinBrightness() {
-        return minBrightness;
-    }
-    public double getFrequency() {
-        return frequency;
-    }
-    public double getPulsation() {
-        return pulsation;
-    }
-    public double getFPS() {
-        return FPS;
+
+    public Double[] getFrames() {
+        return (Double[]) frames.toArray();
     }
 }

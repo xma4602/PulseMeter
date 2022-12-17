@@ -15,21 +15,26 @@ public class Program extends Application {
 //        System.out.println("FPS: " + a.getFPS());
         launch();
     }
+
     public void start(Stage stage) {
         VideoHandler videoHandler = new VideoHandler("src/materials/videos/4.mp4");
 
         stage.setTitle("Chart");
         stage.setResizable(false);
 
-        final NumberAxis xAxis = new NumberAxis(), yAxis = new NumberAxis();
-        final LineChart <Number,Number> lineChart = new LineChart<Number, Number>(xAxis, yAxis);
+        var xAxis = new NumberAxis();
+        var yAxis = new NumberAxis();
+        var lineChart = new LineChart<>(xAxis, yAxis);
+        var series = new XYChart.Series();
 
-        XYChart.Series series = new XYChart.Series();
-        for (int i = 0; i < videoHandler.getPulsationArray().length - 1; i++) {
-            series.getData().add(new XYChart.Data(i, 100 * videoHandler.getPulsationArray()[i]));
+        int from = 0, to = 1000;
+
+        for (int i = from; i < to && i < videoHandler.getFrames().length - 1; i++) {
+            series.getData().add(new XYChart.Data(i, videoHandler.getFrames()[i]));
         }
-        Scene scene = new Scene(lineChart, 1920, 1080);
+
         lineChart.getData().add(series);
+        Scene scene = new Scene(lineChart, 1920, 1080);
         stage.setScene(scene);
 
         stage.show();
