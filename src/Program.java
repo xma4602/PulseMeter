@@ -22,8 +22,9 @@ public class Program extends Application {
         var lineChart = new LineChart<>(xAxis, yAxis);
         var series = new XYChart.Series();
 
-        for (int i = 0; i < videoHandler.getFrames().length; i++) {
-            series.getData().add(new XYChart.Data(i, videoHandler.getFrames()[i]));
+        var frames = videoHandler.getFrames(0, 300);
+        for (int i = 0; i < frames.length; i++) {
+            series.getData().add(new XYChart.Data(i, frames[i]));
         }
 
         lineChart.getData().add(series);
@@ -32,7 +33,7 @@ public class Program extends Application {
 
         stage.show();
 
-        Analyzer a = new Analyzer(videoHandler.getFrames(), videoHandler.getFPS());
+        Analyzer a = new Analyzer(frames, videoHandler.getFPS());
         System.out.println("max: " + a.getMaxBrightness());
         System.out.println("min: " + a.getMinBrightness());
         System.out.println("average: " + a.getAverageBrightness());
