@@ -1,3 +1,5 @@
+import javafx.scene.chart.XYChart;
+
 public class Analyzer {
     private double
             maxBrightness,
@@ -7,12 +9,13 @@ public class Analyzer {
             pulsation,
             FPS;
     private double[] data, trend;
+    private int trendK;
 
-    public Analyzer(double[] frames, double fpc, int trendK) {
+    public Analyzer(double[] frames, double fpc) {
         FPS = fpc;
         data = frames;
+        trendK = Long.valueOf(Math.round(frames.length / FPS * 1.25)).intValue();
         trend = trendOf(data, trendK);
-        //Analyze(trend);
         Analyze(frames);
     }
 
@@ -51,7 +54,7 @@ public class Analyzer {
         pulsation = (maxBrightness - minBrightness) / averageBrightness * 50;
     }
 
-    private static double[] trendOf(double[] data, int radius) {
+    private double[] trendOf(double[] data, int radius) {
         var result = new double[data.length / radius];
 
         double sum;
@@ -92,5 +95,9 @@ public class Analyzer {
 
     public double getFPS() {
         return FPS;
+    }
+
+    public int getTrendK() {
+        return trendK;
     }
 }

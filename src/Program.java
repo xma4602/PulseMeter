@@ -10,9 +10,8 @@ public class Program extends Application {
         launch();
     }
 
-    String path = "src/materials/videos/7.mp4";
-    int fromFrame = 0, toFrame = 1000;
-    int trendK = 25;
+    String path = "src/materials/videos/8.mov";
+    int fromFrame = 0, toFrame = 300;
     boolean highPrecision = false;
 
     public void start(Stage stage) {
@@ -33,13 +32,14 @@ public class Program extends Application {
 
         var frames = videoHandler.getFrames(fromFrame, toFrame);
 
-        var analyzer = new Analyzer(frames, videoHandler.getFPS(), trendK);
-        var middle = analyzer.getTrend();
+        var analyzer = new Analyzer(frames, videoHandler.getFPS());
+        var trend = analyzer.getTrend();
+        var trendK = analyzer.getTrendK();
 
         for (int x = 0; x < frames.length; x++) {
             seriesMain.getData().add(new XYChart.Data<>(x, frames[x]));
-            if (x < middle.length)
-                seriesTrend.getData().add(new XYChart.Data<>(x * trendK, middle[x]));
+            if (x < trend.length)
+                seriesTrend.getData().add(new XYChart.Data<>( x * trendK + trendK / 2 , trend[x]));
         }
 
         chart.getData().add(seriesMain);
