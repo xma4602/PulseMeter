@@ -7,13 +7,16 @@ import javafx.stage.Stage;
 
 public class Program extends Application {
     public static void main(String[] args) {
-
         launch();
     }
 
-    //@SuppressWarnings("unchecked")
+    String path = "src/materials/videos/7.mp4";
+    int fromFrame = 0, toFrame = 1000;
+    int trendK = 25;
+    boolean highPrecision = false;
+
     public void start(Stage stage) {
-        VideoHandler videoHandler = new VideoHandler("src/materials/videos/7.mp4");
+        VideoHandler videoHandler = new VideoHandler(path, highPrecision);
 
         stage.setTitle("Chart");
         stage.setResizable(false);
@@ -24,24 +27,23 @@ public class Program extends Application {
         chart.setTitle("√рафик по€влени€ импульсов и тренда €ркости.");
 
         var seriesMain = new XYChart.Series<Number, Number>();
+        var seriesTrend = new XYChart.Series<Number, Number>();
         seriesMain.setName("»мпульсы");
-        var seriesMiddle = new XYChart.Series<Number, Number>();
-        seriesMiddle.setName("“ренд €ркости");
+        seriesTrend.setName("“ренд €ркости");
 
+        var frames = videoHandler.getFrames(fromFrame, toFrame);
 
-        var frames = videoHandler.getFrames(0, 500);
-        int trendK = 20;
         var analyzer = new Analyzer(frames, videoHandler.getFPS(), trendK);
         var middle = analyzer.getTrend();
 
         for (int x = 0; x < frames.length; x++) {
             seriesMain.getData().add(new XYChart.Data<>(x, frames[x]));
             if (x < middle.length)
-                seriesMiddle.getData().add(new XYChart.Data<>(x * trendK, middle[x]));
+                seriesTrend.getData().add(new XYChart.Data<>(x * trendK, middle[x]));
         }
 
         chart.getData().add(seriesMain);
-        chart.getData().add(seriesMiddle);
+        chart.getData().add(seriesTrend);
         Scene scene = new Scene(chart, 1280, 720);
         stage.setScene(scene);
 

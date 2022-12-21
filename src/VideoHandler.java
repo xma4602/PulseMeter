@@ -16,9 +16,11 @@ public class VideoHandler {
     }
     private double FPS;
     private String path;
+    private boolean highPrecision;
 
-    public VideoHandler(String path) {
+    public VideoHandler(String path, boolean highPrecision) {
         this.path = path;
+        this.highPrecision = highPrecision;
         FPS = new VideoCapture(path).get(Videoio.CAP_PROP_FPS);
     }
 
@@ -26,7 +28,6 @@ public class VideoHandler {
 
         var cap = new VideoCapture(path); // создание видеопотока
         var frames = new double[toFrame - fromFrame];
-
         Mat frame = new Mat();
         MatOfByte buf = new MatOfByte();
         Graphics2D graphics;
@@ -42,7 +43,7 @@ public class VideoHandler {
                 graphics = image.createGraphics();
                 graphics.drawImage(icon.getImage(), 0, 0, null);
                 graphics.dispose();
-                frames[i-fromFrame] = ImageParser.getBrightness(image);
+                frames[i-fromFrame] = ImageParser.getBrightness(image, highPrecision);
             }
         }
         cap.release();
