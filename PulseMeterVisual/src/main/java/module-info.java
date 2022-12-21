@@ -5,6 +5,6 @@ module com.example.pulsemetervisual {
     requires org.controlsfx.controls;
     requires com.dlsc.formsfx;
 
-    opens com.example.pulsemetervisual to javafx.fxml;
-    exports com.example.pulsemetervisual;
+    opens com.pulsemetervisual to javafx.fxml;
+    exports com.pulsemetervisual;
 }

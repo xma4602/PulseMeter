@@ -75,7 +75,7 @@
                         <!-- Default configuration for running with: mvn clean javafx:run -->
                         <id>default-cli</id>
                         <configuration>
-                            <mainClass>com.example.pulsemetervisual/com.example.pulsemetervisual.HelloApplication
+                            <mainClass>com.example.pulsemetervisual/com.pulsemetervisual.PulseMeterApplication
                             </mainClass>
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>
