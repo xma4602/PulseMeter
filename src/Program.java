@@ -11,6 +11,7 @@ public class Program extends Application {
         launch();
     }
 
+    //@SuppressWarnings("unchecked")
     public void start(Stage stage) {
         VideoHandler videoHandler = new VideoHandler("src/materials/videos/7.mp4");
 
@@ -19,26 +20,43 @@ public class Program extends Application {
 
         var xAxis = new NumberAxis();
         var yAxis = new NumberAxis();
-        var lineChart = new LineChart<>(xAxis, yAxis);
-        var series = new XYChart.Series();
+        var chart = new LineChart<>(xAxis, yAxis);
+        chart.setTitle("√рафик по€влени€ импульсов и тренда €ркости.");
 
-        var frames = videoHandler.getFrames(0, 300);
-        for (int i = 0; i < frames.length; i++) {
-            series.getData().add(new XYChart.Data(i, frames[i]));
+        var seriesMain = new XYChart.Series<Number, Number>();
+        seriesMain.setName("»мпульсы");
+        var seriesMiddle = new XYChart.Series<Number, Number>();
+        seriesMiddle.setName("“ренд €ркости");
+
+
+        var frames = videoHandler.getFrames(0, 500);
+        int trendK = 20;
+        var analyzer = new Analyzer(frames, videoHandler.getFPS(), trendK);
+        var middle = analyzer.getTrend();
+
+        for (int x = 0; x < frames.length; x++) {
+            seriesMain.getData().add(new XYChart.Data<>(x, frames[x]));
+            if (x < middle.length)
+                seriesMiddle.getData().add(new XYChart.Data<>(x * trendK, middle[x]));
         }
 
-        lineChart.getData().add(series);
-        Scene scene = new Scene(lineChart, 1920, 1080);
+        chart.getData().add(seriesMain);
+        chart.getData().add(seriesMiddle);
+        Scene scene = new Scene(chart, 1280, 720);
         stage.setScene(scene);
 
         stage.show();
 
-        Analyzer a = new Analyzer(frames, videoHandler.getFPS());
-        System.out.println("max: " + a.getMaxBrightness());
-        System.out.println("min: " + a.getMinBrightness());
-        System.out.println("average: " + a.getAverageBrightness());
-        System.out.println("Frequency: " + a.getFrequency());
-        System.out.println("Pulsation: " + a.getPulsation());
-        System.out.println("FPS: " + a.getFPS());
+        System.out.println("max:\t\t" + round(analyzer.getMaxBrightness()) + "%");
+        System.out.println("min:\t\t" + round(analyzer.getMinBrightness()) + "%");
+        System.out.println("average:\t" + round(analyzer.getAverageBrightness()) + "%");
+        System.out.println("Frequency:\t" + round(analyzer.getFrequency()) + " √ц");
+        System.out.println("Pulsation:\t" + round(analyzer.getPulsation()) + "%");
+        System.out.println("FPS:\t\t" + round(analyzer.getFPS()) + " кадр/с");
     }
+
+    private static String round(double n) {
+        return String.format("%.3f", n);
+    }
+
 }

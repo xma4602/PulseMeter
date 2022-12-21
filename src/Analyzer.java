@@ -6,12 +6,22 @@ public class Analyzer {
             frequency,
             pulsation,
             FPS;
-    public Analyzer(double[] data, double fpc) {
+    private double[] data, trend;
+
+    public Analyzer(double[] frames, double fpc, int trendK) {
+        FPS = fpc;
+        data = frames;
+        trend = trendOf(data, trendK);
+        //Analyze(trend);
+        Analyze(frames);
+    }
+
+    public void Analyze(double[] data) {
         maxBrightness = Integer.MIN_VALUE;
         minBrightness = Integer.MAX_VALUE;
         averageBrightness = 0;
         frequency = 0;
-        FPS = fpc;
+
         int n1 = 0, n2 = 0;
         boolean flag = true;
 
@@ -22,7 +32,6 @@ public class Analyzer {
             maxBrightness = Math.max(data[count], maxBrightness);
             minBrightness = Math.min(data[count], minBrightness);
 
-            //���� ��� ���������
             if (data[count - 1] <= data[count] && data[count] >= data[count + 1]) {
                 if (flag) {
                     n1 = count;
@@ -31,7 +40,7 @@ public class Analyzer {
                     n2 = count;
                     flag = true;
                 }
-                frequency += fpc / Math.abs(n1 - n2);
+                frequency += FPS / Math.abs(n1 - n2);
                 n++;
             }
 
@@ -40,6 +49,25 @@ public class Analyzer {
         averageBrightness /= count;
         frequency /= n;
         pulsation = (maxBrightness - minBrightness) / averageBrightness * 50;
+    }
+
+    private static double[] trendOf(double[] data, int radius) {
+        var result = new double[data.length / radius];
+
+        double sum;
+        for (int i = 0; i < result.length; i++) {
+            sum = 0;
+            for (int j = 0; j < radius; j++) {
+                sum += data[i * radius + j];
+            }
+            result[i] = sum / radius;
+        }
+
+        return result;
+    }
+
+    public double[] getTrend() {
+        return trend;
     }
 
     public double getAverageBrightness() {
