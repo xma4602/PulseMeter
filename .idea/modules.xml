@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/PulseMeter.iml" filepath="$PROJECT_DIR$/PulseMeter.iml" />
-      <module fileurl="file://$PROJECT_DIR$/PulseMeterVisual/PulseMeterVisual.iml" filepath="$PROJECT_DIR$/PulseMeterVisual/PulseMeterVisual.iml" />
     </modules>
   </component>
 </project>
